@@ -1,0 +1,71 @@
+name: Build Hn38videoAItool Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Install Playwright Chromium
+        shell: pwsh
+        run: |
+          $env:PLAYWRIGHT_BROWSERS_PATH = "$PWD/_browsers"
+          python -m playwright install chromium
+
+      - name: Build EXE
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean Hn38videoAItool.spec
+
+      - name: Prepare portable folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "dist/Hn38videoAItool/_browsers"
+          New-Item -ItemType Directory -Force -Path "dist/Hn38videoAItool/browser_profiles/meta"
+          New-Item -ItemType Directory -Force -Path "dist/Hn38videoAItool/browser_profiles/flow"
+          New-Item -ItemType Directory -Force -Path "dist/Hn38videoAItool/output"
+          New-Item -ItemType Directory -Force -Path "dist/Hn38videoAItool/logs"
+
+          Copy-Item -Recurse "_browsers/*" `
+            "dist/Hn38videoAItool/_browsers/"
+
+          Copy-Item -Recurse "assets" `
+            "dist/Hn38videoAItool/"
+
+          Copy-Item -Recurse "data" `
+            "dist/Hn38videoAItool/"
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path "dist/Hn38videoAItool/*" `
+            -DestinationPath "dist/Hn38videoAItool-Windows.zip" `
+            -Force
+
+      - name: Upload Windows ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hn38videoAItool-Windows
+          path: dist/Hn38videoAItool-Windows.zip
+          if-no-files-found: error
