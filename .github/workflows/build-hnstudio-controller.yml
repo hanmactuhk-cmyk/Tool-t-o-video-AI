@@ -25,8 +25,44 @@ jobs:
         working-directory: HNStudio-Flow-Controlled
       - run: npm run dist
         working-directory: HNStudio-Flow-Controlled
+      - name: Split the portable EXE into downloadable parts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path .\dist-parts | Out-Null
+          $exe = Get-ChildItem .\HNStudio-Flow-Controlled\dist\*.exe | Select-Object -First 1
+          if (-not $exe) { throw "Portable EXE was not produced." }
+          $bytes = [System.IO.File]::ReadAllBytes($exe.FullName)
+          $chunkSize = 20 * 1024 * 1024
+          for ($offset = 0, $i = 1; $offset -lt $bytes.Length; $offset += $chunkSize, $i++) {
+            $count = [Math]::Min($chunkSize, $bytes.Length - $offset)
+            $part = New-Object byte[] $count
+            [Array]::Copy($bytes, $offset, $part, 0, $count)
+            $partName = "part-{0}.bin" -f $i
+            [System.IO.File]::WriteAllBytes((Join-Path .\dist-parts $partName), $part)
+          }
+          "Created $i EXE parts."
       - uses: actions/upload-artifact@v4
         with:
-          name: HNStudio-Flow-Controller-Windows-x64
-          path: HNStudio-Flow-Controlled/dist/*.exe
+          name: HNStudio-Flow-Controller-part-1
+          path: dist-parts/part-1.bin
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HNStudio-Flow-Controller-part-2
+          path: dist-parts/part-2.bin
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HNStudio-Flow-Controller-part-3
+          path: dist-parts/part-3.bin
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HNStudio-Flow-Controller-part-4
+          path: dist-parts/part-4.bin
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HNStudio-Flow-Controller-part-5
+          path: dist-parts/part-5.bin
           if-no-files-found: error
