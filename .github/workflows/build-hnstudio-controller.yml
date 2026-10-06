@@ -1,0 +1,32 @@
+name: Build HNStudio Flow Controller (Windows portable)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'hnstudio-flow-controller-v*'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack source
+        shell: pwsh
+        run: Expand-Archive -Path HNStudio-Flow-Controlled-2.0.0-source.zip -DestinationPath .
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: HNStudio-Flow-Controlled/package-lock.json
+      - run: npm ci
+        working-directory: HNStudio-Flow-Controlled
+      - run: npm test
+        working-directory: HNStudio-Flow-Controlled
+      - run: npm run dist
+        working-directory: HNStudio-Flow-Controlled
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HNStudio-Flow-Controller-Windows-x64
+          path: HNStudio-Flow-Controlled/dist/*.exe
+          if-no-files-found: error
