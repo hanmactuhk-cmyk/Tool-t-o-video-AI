@@ -14,6 +14,11 @@ jobs:
       - name: Unpack source
         shell: pwsh
         run: Expand-Archive -Path HNStudio-Flow-Controlled-2.0.0-source.zip -DestinationPath .
+      - name: Apply Flow credit reader fix
+        shell: pwsh
+        run: |
+          Copy-Item .\\patches\\chrome-direct.cjs .\\HNStudio-Flow-Controlled\\chrome-direct.cjs -Force
+          Copy-Item .\\patches\\behavior.test.cjs .\\HNStudio-Flow-Controlled\\test\\behavior.test.cjs -Force
       - uses: actions/setup-node@v4
         with:
           node-version: 22
