@@ -6,11 +6,11 @@
 
 Yêu cầu Windows 10/11 x64 và Google Chrome. Mở HNStudio, thêm hồ sơ Flow rồi bấm **Đăng nhập / mở Chrome**. Tool mở Chrome với thư mục hồ sơ riêng và cổng debug cục bộ, sau đó anh đăng nhập Google trực tiếp trong Chrome. Không cần cài hoặc ghép extension.
 
-Tool nhận diện email và credit từ trang Flow, lưu lần đọc gần nhất, và chỉ giao việc khi số dư đã được đọc, còn dương, cùng ngân sách dự kiến đủ. Nếu Flow đổi giao diện hoặc một bộ chọn không nhận diện được, tác vụ dừng và ghi log.
+Tool nhận diện email khi Chrome kết nối nhưng không tự đọc credits nền. Credits chỉ được đọc khi anh bấm **Kiểm tra credit tất cả tài khoản**; mỗi tài khoản Flow được đọc trong lượt đó. Hàng chờ chỉ chạy khi credits đã đọc và còn dương.
 
-Thêm prompt/ảnh tham chiếu, chọn model và đưa vào hàng chờ. Tool dùng CDP để chọn cấu hình, điền prompt và tải ảnh tham chiếu. Tự bấm Tạo chỉ chạy khi model và cấu hình được xác minh. Kết quả hiện cần tải từ Flow và gắn vào hàng chờ để xác nhận; tool chưa tự tải kết quả đầu ra.
+Thêm prompt/ảnh tham chiếu, chọn model rồi đưa vào hàng chờ. Khi bấm **Chạy hàng chờ**, tool tự mở dự án mới nếu chưa có ô prompt, chọn loại ảnh/video và model, điền prompt, tải ảnh rồi bấm **Generate Image** nếu Flow xác nhận cấu hình. Kết quả cần được kiểm tra và xác nhận trong hàng chờ; tool hiện chưa tự tải file kết quả.
 
-Mỗi tài khoản lưu trạng thái Chrome dưới thư mục dữ liệu ứng dụng. Mật khẩu Google không đi qua HNStudio. Đóng Chrome thì tác vụ mới không được gửi; email và credit lần đọc gần nhất vẫn được lưu.
+Mỗi tài khoản lưu trạng thái Chrome dưới thư mục dữ liệu ứng dụng. Mật khẩu Google không đi qua HNStudio. Đóng Chrome thì tác vụ mới không được gửi; email và credits lần bấm kiểm tra gần nhất vẫn được lưu. Mở Chrome rồi bấm kiểm tra tất cả trước khi chạy hàng chờ.
 
 ## Bảo mật cổng debug
 
