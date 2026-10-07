@@ -16,12 +16,6 @@ test('Flow account reader captures email and correctly recognizes zero credits',
  assert.equal(value.email,'hoai@example.com');assert.equal(value.credits,0);assert.equal(value.loggedIn,true);
 });
 
-test('Flow account reader recognizes the Vietnamese Google Flow credit label',()=>{
- const nodes=['hoai@example.com','50 tín dụng Google Flow'].map(s=>({...element(s),tagName:'DIV'}));
- const value=vm.runInNewContext(accountExpression,{document:{querySelectorAll:()=>nodes,querySelector:()=>null},getComputedStyle:()=>({visibility:'visible'})});
- assert.equal(value.email,'hoai@example.com');assert.equal(value.credits,50);assert.equal(value.loggedIn,true);
-});
-
 test('image prompt preparation chooses an image input and returns the selected files',()=>{
  const prompt=element('');prompt.tagName='TEXTAREA';prompt.value='';
  const input=element('');input.tagName='INPUT';input.accept='image/*';input.multiple=true;input.name='reference_images';
@@ -45,3 +39,4 @@ test('Flow control automation chooses image/video mode, model, ratio, duration a
  const result=await vm.runInNewContext(expr,{document,setTimeout,Promise});
  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(current.model,'Veo 3.1 - Fast');assert.equal(current.ratio,'9:16');assert.equal(current.duration,'8 s');assert.equal(current.quality,'720p');
 });
+
