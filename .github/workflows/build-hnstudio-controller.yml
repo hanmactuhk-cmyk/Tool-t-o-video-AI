@@ -24,6 +24,7 @@ jobs:
           Copy-Item .\\patches\\app.js .\\HNStudio-Flow-Controlled\\app.js -Force
           Copy-Item .\\patches\\behavior.test.cjs .\\HNStudio-Flow-Controlled\\test\\behavior.test.cjs -Force
           Copy-Item .\\patches\\chrome-direct.test.cjs .\\HNStudio-Flow-Controlled\\test\\chrome-direct.test.cjs -Force
+          Copy-Item .\\patches\\server.test.cjs .\\HNStudio-Flow-Controlled\\test\\server.test.cjs -Force
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -38,8 +39,8 @@ jobs:
       - name: Split the portable EXE into downloadable parts
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path .\dist-parts | Out-Null
-          $exe = Get-ChildItem .\HNStudio-Flow-Controlled\dist\*.exe | Select-Object -First 1
+          New-Item -ItemType Directory -Force -Path .\\dist-parts | Out-Null
+          $exe = Get-ChildItem .\\HNStudio-Flow-Controlled\\dist\\*.exe | Select-Object -First 1
           if (-not $exe) { throw "Portable EXE was not produced." }
           $bytes = [System.IO.File]::ReadAllBytes($exe.FullName)
           $chunkSize = 20 * 1024 * 1024
@@ -50,7 +51,7 @@ jobs:
             $part = New-Object byte[] $count
             [Array]::Copy($bytes, $offset, $part, 0, $count)
             $partName = "part-{0}.bin" -f $i
-            [System.IO.File]::WriteAllBytes((Join-Path .\dist-parts $partName), $part)
+            [System.IO.File]::WriteAllBytes((Join-Path .\\dist-parts $partName), $part)
             $offset += $count
             $i++
           }
