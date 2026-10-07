@@ -19,4 +19,3 @@ Mỗi tài khoản lưu trạng thái Chrome dưới thư mục dữ liệu ứn
 ## Bảo mật cổng debug
 
 Cổng CDP cấp quyền điều khiển toàn bộ Chrome đang đăng nhập. HNStudio chỉ bind dịch vụ cục bộ trên `127.0.0.1`, mở cổng trong dải `9222–9299` khi chạy, và dùng profile riêng theo tài khoản. Không tự chuyển tiếp các cổng này qua router hoặc mở ra mạng LAN.
-
