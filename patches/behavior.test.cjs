@@ -40,3 +40,20 @@ test('Flow control automation chooses image/video mode, model, ratio, duration a
  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(current.model,'Veo 3.1 - Fast');assert.equal(current.ratio,'9:16');assert.equal(current.duration,'8 s');assert.equal(current.quality,'720p');
 });
 
+
+test('Flow budgets under 10 credits choose a supported low-cost model and output size',()=>{
+ const {budgetPlan}=require('../core.cjs'),video={provider:'flow',kind:'video',model:'Veo 3.1 - Fast',cost:20,duration:'8',quality:['720p']};
+ assert.deepEqual(budgetPlan({provider:'flow',credits:8,reserved:0},video),{model:'Gemini Omni Flash 1.1',cost:6,duration:'8',quality:['360p'],note:'Tài khoản còn 8 credits: tự chọn Gemini Omni Flash 360p, 8s (6 credits).'});
+ assert.equal(budgetPlan({provider:'flow',credits:5,reserved:0},video).duration,'6');
+ assert.equal(budgetPlan({provider:'flow',credits:3,reserved:0},video),null);
+ const image=budgetPlan({provider:'flow',credits:0,reserved:0},{provider:'flow',kind:'image',model:'Nano Banana Pro',cost:0});
+ assert.equal(image.model,'Nano Banana 2 Lite');assert.equal(image.cost,0);
+ assert.equal(budgetPlan({provider:'flow',credits:null,reserved:0},video),null);
+});
+
+test('Flow dispatch reserves the affordable model cost after one manual credit read',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'hn-low-credit-')),store=new Store(path.join(dir,'workspace.json')),a=store.addAccount('Flow low');
+ store.balance(a,8,'explicit check-all');a.lastSeen=Date.now();store.running=true;
+ store.enqueue({provider:'flow',kind:'video',prompts:'A test scene',model:'Veo 3.1 - Fast',duration:8,cost:20,auto:true});
+ const job=store.dispatch(a,'test-session');assert.ok(job);assert.equal(job.model,'Gemini Omni Flash 1.1');assert.equal(job.duration,'8');assert.equal(job.quality[0],'360p');assert.equal(job.cost,6);assert.equal(a.reserved,6);assert.match(job.budgetNote,/dưới 10|còn 8 credits/i);
+});
