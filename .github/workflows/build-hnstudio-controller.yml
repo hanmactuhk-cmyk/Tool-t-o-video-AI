@@ -14,11 +14,15 @@ jobs:
       - name: Unpack source
         shell: pwsh
         run: Expand-Archive -Path HNStudio-Flow-Controlled-2.0.0-source.zip -DestinationPath .
-      - name: Apply Flow credit reader fix
+      - name: Apply direct Chrome DevTools controller
         shell: pwsh
         run: |
           Copy-Item .\\patches\\chrome-direct.cjs .\\HNStudio-Flow-Controlled\\chrome-direct.cjs -Force
+          Copy-Item .\\patches\\server.cjs .\\HNStudio-Flow-Controlled\\server.cjs -Force
+          Copy-Item .\\patches\\README.md .\\HNStudio-Flow-Controlled\\README.md -Force
+          Copy-Item .\\patches\\index.html .\\HNStudio-Flow-Controlled\\index.html -Force
           Copy-Item .\\patches\\behavior.test.cjs .\\HNStudio-Flow-Controlled\\test\\behavior.test.cjs -Force
+          Copy-Item .\\patches\\chrome-direct.test.cjs .\\HNStudio-Flow-Controlled\\test\\chrome-direct.test.cjs -Force
       - uses: actions/setup-node@v4
         with:
           node-version: 22
