@@ -1,5 +1,5 @@
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto'),net=require('node:net');
-const {Store,active}=require('./core.cjs');
+const {Store,active,budgetPlan}=require('./core.cjs');
 const UI_TOKEN=crypto.randomBytes(32).toString('hex');
 const {configureExpression,prepareExpression,submitExpression,detect,accountExpression,openProjectExpression,openAccountMenuExpression,closeAccountMenuExpression}=require('./chrome-direct.cjs');
 const EXTENSION_ID='mafaioocjnmcdnhfdakilbgoihlbebbe';
@@ -7,7 +7,7 @@ function createServer({dataDir=path.join(os.homedir(),'HNStudio-Flow-Controlled'
  const store=new Store(path.join(dataDir,'workspace.json'));const direct=new (require('./chrome-direct.cjs').ChromeDirect)(store,dataDir);
  function portIsFree(port){return new Promise(resolve=>{const probe=net.createServer();probe.once('error',()=>resolve(false));probe.listen(port,'127.0.0.1',()=>probe.close(()=>resolve(true)));});}
  async function debugPortFor(a){const current=direct.profiles.get(a.id);if(current)return current.port;const used=new Set([...direct.profiles.values()].map(p=>p.port));let port=Number(a.debugPort)||9222;while(used.has(port)||!(await portIsFree(port)))port++;if(port>9299)throw Error('Không còn cổng Chrome DevTools trống trong dải 9222–9299');return port;}
- function accountCanRun(a,j){if((a.provider||'flow')==='flow'&&(!Number.isSafeInteger(a.credits)||a.credits<=0))return false;return j.cost===0||store.available(a)!=null&&store.available(a)>=j.cost;}
+ function accountCanRun(a,j){return !!budgetPlan(a,j);}
  function json(res,obj,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(obj));}
  async function body(req,maxBytes=32*1024*1024){let text='';for await(const b of req){text+=b;if(text.length>maxBytes)throw Error('Dữ liệu quá lớn');}return text?JSON.parse(text):{};}
  const server=http.createServer(async(req,res)=>{try{
