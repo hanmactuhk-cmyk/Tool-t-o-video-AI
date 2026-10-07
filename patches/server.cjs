@@ -32,7 +32,7 @@ function createServer({dataDir=path.join(os.homedir(),'HNStudio-Flow-Controlled'
  else if(url.pathname==='/api/account/pair'){const a=store.account(d.id);return json(res,{code:JSON.stringify({endpoint:`http://127.0.0.1:${server.address().port}`,key:a.key}),extension:path.join(__dirname,'extension')});}
  else if(url.pathname==='/api/account/open'){
   const a=store.account(d.id),cp=require('node:child_process');
-  const candidates=process.platform==='win32'?[path.join(process.env.PROGRAMFILES||'C:\Program Files','Google/Chrome/Application/chrome.exe'),path.join(process.env['PROGRAMFILES(X86)']||'C:\Program Files (x86)','Google/Chrome/Application/chrome.exe'),path.join(process.env.LOCALAPPDATA||'','Google/Chrome/Application/chrome.exe')]:process.platform==='darwin'?['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome']:['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'];
+  const candidates=process.platform==='win32'?[path.join(process.env.PROGRAMFILES||'C:\\Program Files','Google/Chrome/Application/chrome.exe'),path.join(process.env['PROGRAMFILES(X86)']||'C:\\Program Files (x86)','Google/Chrome/Application/chrome.exe'),path.join(process.env.LOCALAPPDATA||'','Google/Chrome/Application/chrome.exe')]:process.platform==='darwin'?['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome']:['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'];
   const exe=candidates.find(p=>fs.existsSync(p));if(!exe)throw Error('Cài Google Chrome trước khi mở tài khoản');
   const profileDir=path.join(dataDir,'profiles',a.id);fs.mkdirSync(profileDir,{recursive:true});
   const debugPort=await debugPortFor(a);a.debugPort=debugPort;direct.watch(a,profileDir,debugPort);
