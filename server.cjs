@@ -28,8 +28,6 @@ function createServer({dataDir=path.join(os.homedir(),'HNStudio-Flow-Controlled'
  if(url.pathname==='/api/account/add')store.addAccount(d.name,d.provider==='chatgpt'?'chatgpt':'flow');
  else if(url.pathname==='/api/account/update'){const a=store.account(d.id);if(d.enabled!==undefined)a.enabled=!!d.enabled;for(const flag of ['allowImage','allowVideo'])if(d[flag]!==undefined)a[flag]=!!d[flag];if(d.credits!==undefined)store.balance(a,Number(d.credits),'Nhập tay từ Flow');}
  else if(url.pathname==='/api/accounts/check-credits'){const result=await direct.checkAllCredits();return json(res,result);}
- else if(url.pathname==='/api/record/start'){const a=store.account(d.id);if((a.provider||'flow')!=='flow')throw Error('Chỉ hỗ trợ ghi thao tác trên Google Flow');return json(res,direct.startRecording(a.id));}
- else if(url.pathname==='/api/record/stop'){const a=store.account(d.id);return json(res,await direct.stopRecording(a.id));}
  else if(url.pathname==='/api/account/delete'){const a=store.account(d.id);if(store.state.jobs.some(j=>j.accountId===a.id&&['assigned','prepared','submitted','review','uncertain'].includes(j.status)))throw Error('Xác nhận tác vụ đang xử lý trước khi xóa tài khoản');const profile=direct.profiles.get(a.id);if(profile){for(const c of profile.connections.values())c.close();direct.profiles.delete(a.id);}store.state.accounts=store.state.accounts.filter(x=>x.id!==a.id);store.log('Đã xóa hồ sơ khỏi danh sách: '+a.name);}
  else if(url.pathname==='/api/account/pair'){const a=store.account(d.id);return json(res,{code:JSON.stringify({endpoint:`http://127.0.0.1:${server.address().port}`,key:a.key}),extension:path.join(__dirname,'extension')});}
  else if(url.pathname==='/api/account/open'){
